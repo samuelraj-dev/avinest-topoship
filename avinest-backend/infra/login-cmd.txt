@@ -1,0 +1,17 @@
+wrk -t1 -c1 -d30s \
+  -H "Content-Type: application/json" \
+  --latency \
+  -s login.lua \
+  http://localhost:8080/api/auth/login
+
+wrk -t4 -c50 -d30s \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  --latency \
+  http://localhost:8080/api/me
+
+
+
+ab -n 50 -c 1 \
+  -p login.json \
+  -T application/json \
+  http://localhost:8080/api/auth/login

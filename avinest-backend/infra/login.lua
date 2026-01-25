@@ -1,0 +1,4 @@
+wrk.method = "POST"
+wrk.headers["Content-Type"] = "application/json"
+
+wrk.body = '{"username":"2117230080093","password":"9445516488"}'
