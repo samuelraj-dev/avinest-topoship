@@ -1,0 +1,1 @@
+export const PYTHON_MEDIA_BASE_URL = "http://localhost:5000/media";

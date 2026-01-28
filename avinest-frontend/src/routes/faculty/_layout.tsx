@@ -1,27 +1,29 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { requireAuth, requireRole } from '../../auth/guards'
-import { LogoutButton } from '../../components/ui/logout-button';
+import { requireRole } from '../../auth/guards'
 import { AppShell } from '../../components/ui/app-shell';
+import type { SidebarConfig } from '../../types/sidebar.types';
+import { Sidebar } from '../../components/ui/sidebar';
 
 export const Route = createFileRoute('/faculty/_layout')({
-  beforeLoad: () => {
-    requireAuth();
-    requireRole("FACULTY")();
-  },
+  beforeLoad:  requireRole("FACULTY"),
   component: FacultyDashboard,
 })
 
+export const facultySidebarConfig: SidebarConfig = {
+  title: "Faculty Portal",
+  subtitle: "RIT Chennai",
+  items: [
+    { label: "Dashboard", to: "/faculty", exact: true },
+    { label: "Profile", to: "/faculty/profile" },
+    { label: "Classes", to: "/faculty/classes" },
+    { label: "Attendance", to: "/faculty/attendance" },
+  ],
+};
+
 function FacultyDashboard() {
   return (
-      // <div className="flex">
-      //   <aside className="w-64 bg-gray-900 text-white">
-      //     Faculty Sidebar
-      //     <LogoutButton />
-      //   </aside>
-      //   <main className="flex-1 p-6">
-      //     <Outlet />
-      //   </main>
-      // </div>
-      <AppShell sidebar={<></>} children={<Outlet />} />
+      <AppShell sidebar={<Sidebar config={facultySidebarConfig} />}>
+        <Outlet />
+      </AppShell>
     );
 }

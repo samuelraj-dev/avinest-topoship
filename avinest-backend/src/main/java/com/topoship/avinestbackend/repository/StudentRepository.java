@@ -5,6 +5,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static com.topoship.jooq.generated.tables.Students.STUDENTS;
 
@@ -37,4 +38,9 @@ public class StudentRepository {
                 .fetchOne();
     }
 
+    public Optional<StudentsRecord> findByUserId(Long userId) {
+        return dsl.selectFrom(STUDENTS)
+                .where(STUDENTS.USER_ID.eq(userId))
+                .fetchOptional();
+    }
 }

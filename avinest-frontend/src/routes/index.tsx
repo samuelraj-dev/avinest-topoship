@@ -4,6 +4,7 @@ import { getClaims } from '../auth/authStore';
 export const Route = createFileRoute('/')({
   beforeLoad: () => {
     const claims = getClaims();
+    
     if (!claims) {
       throw redirect({ to: "/login" });
     }

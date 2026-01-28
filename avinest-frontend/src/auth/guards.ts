@@ -2,9 +2,11 @@ import { redirect } from "@tanstack/react-router";
 import { getClaims } from "./authStore";
 
 export const requireAuth = () => {
-  if (!getClaims()) {
+  const claims = getClaims();
+  if (!claims) {
     throw redirect({ to: "/login" });
   }
+  return claims;
 };
 
 export const requireGuest = () => {
@@ -16,9 +18,14 @@ export const requireGuest = () => {
   }
 }
 
-export const requireRole = (role: "STUDENT" | "FACULTY") => () => {
-  const claims = getClaims();
-  if (!claims || claims.role !== role) {
-    throw redirect({ to: "/unauthorized" });
-  }
+export const requireRole = (role: "STUDENT" | "FACULTY") => {
+  return () => {
+    const claims = requireAuth();
+    
+    if (claims.role !== role) {
+      throw redirect({ to: "/unauthorized" });
+    }
+    
+    return claims;
+  };
 };

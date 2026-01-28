@@ -19,7 +19,7 @@ export function Button({
     <button
       disabled={loading || props.disabled}
       className={cn(
-        "inline-flex items-center justify-center rounded-md font-medium",
+        "inline-flex items-center justify-center rounded-md font-medium cursor-pointer",
         "transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         {

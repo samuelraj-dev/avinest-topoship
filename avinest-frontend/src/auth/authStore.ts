@@ -21,14 +21,20 @@ export function getAccessToken() {
 
 export function getClaims(): Claims | null {
   if (!accessToken) return null;
-  return jwtDecode(accessToken);
+
+  const claims = jwtDecode<Claims>(accessToken);
+
+  if (claims.exp * 1000 < Date.now()) {
+    return null;
+  }
+
+  return claims;
 }
 
 export async function logout() {
   try {
-    await api.post("/auth/logout");
+    await api.post("/auth/logout", { refresh_token: localStorage.getItem("refreshToken") });
   } catch {
-    // ignore network issues
   } finally {
     localStorage.removeItem("refreshToken");
     setAccessToken(null);

@@ -1,11 +1,13 @@
 package com.topoship.avinestbackend;
 
+import com.topoship.avinestbackend.auth.dto.LogoutRequest;
 import com.topoship.avinestbackend.auth.dto.RefreshRequest;
 import com.topoship.avinestbackend.auth.service.AuthService;
 import com.topoship.avinestbackend.dto.LoginRequest;
 import com.topoship.avinestbackend.dto.LoginResponse;
 import com.topoship.avinestbackend.dto.TokenResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +29,13 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public TokenResponse refresh(@RequestBody RefreshRequest req) {
+        System.out.println(req.refreshToken());
         return authService.refresh(req.refreshToken());
     }
 
+    @PostMapping("logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(@RequestBody LogoutRequest req) {
+        authService.logout(req.refreshToken());
+    }
 }

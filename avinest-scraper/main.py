@@ -1,4 +1,6 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import httpx
 from bs4 import BeautifulSoup
@@ -7,14 +9,36 @@ from typing import Optional
 import aiofiles
 from pathlib import Path
 import time
+import re
+from collections import OrderedDict
+from typing import List, Dict, Tuple
 
 app = FastAPI()
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://localhost:8080"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+app.mount(
+    "/media",
+    StaticFiles(directory="uploads"),
+    name="media",
+)
 
 # Portal URLs
 PORTAL_LOGIN_URL = "https://ims.ritchennai.edu.in/login"
 PORTAL_HOME_URL = "https://ims.ritchennai.edu.in/admin"
 PORTAL_CSRF_URL = "https://ims.ritchennai.edu.in/admin/grade/student/mark/report"
 LOGIN_FAILURE_MSG = "These credentials do not match our records."
+
+FACULTY_SUBJECTS_URL = "https://ims.ritchennai.edu.in/admin/staff-subjects/index"
+STUDENT_TIMETABLE_URL = "https://ims.ritchennai.edu.in/admin/student-time-table/2938"
 
 class LoginRequest(BaseModel):
     username: str
@@ -54,6 +78,21 @@ async def fetch_csrf_token(client: httpx.AsyncClient, url: str) -> str:
         return token_element.get("value", "")
     except httpx.RequestError as e:
         raise HTTPException(status_code=503, detail=f"Failed to fetch CSRF token: {str(e)}")
+    
+def extract_name_code(text: str):
+    """
+    Extract 'Name (CODE)' → ('Name', 'CODE')
+    Fallbacks safely if format changes.
+    """
+    if not text:
+        return text, None
+
+    match = re.match(r"(.+?)\s*\(([^)]+)\)", text)
+    if match:
+        return match.group(1).strip(), match.group(2).strip()
+
+    return text.strip(), None
+
 
 async def perform_login(client: httpx.AsyncClient, username: str, password: str, csrf_token: str) -> bool:
     """Perform login to the portal"""
@@ -331,6 +370,119 @@ async def extract_profile_details(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to parse profile: {str(e)}")
 
+def parse_faculty_subjects(html: str) -> List[Dict]:
+    soup = BeautifulSoup(html, "lxml")
+
+    table = soup.find("table")
+    if not table or not table.tbody:
+        raise HTTPException(status_code=500, detail="Subjects table not found")
+
+    subjects = []
+
+    for row in table.tbody.find_all("tr"):
+        cols = row.find_all("td")
+        if len(cols) < 3:
+            continue
+
+        class_name = cols[1].get_text(strip=True)
+        subject_text = cols[2].get_text(strip=True)
+
+        # Parse class name: Program/Semester/Section
+        try:
+            program_raw, sem, section = class_name.rsplit("/", 2)
+            semester = int(sem)
+        except Exception:
+            continue
+
+        # Parse subject: Title (CODE)
+        match = re.match(r"(.+?)\s*\(([^)]+)\)", subject_text)
+        if not match:
+            continue
+
+        subjects.append({
+            "program_raw": program_raw.strip(),
+            "semester": semester,
+            "section": section.strip(),
+            "course_title": match.group(1).strip(),
+            "course_code": match.group(2).strip(),
+        })
+
+    return subjects
+
+def parse_student_timetable(html: str) -> List[Dict]:
+    soup = BeautifulSoup(html, "lxml")
+    forms = soup.select("form.period_form")
+
+    timetable = []
+
+    for form in forms:
+        def get_input(name):
+            inp = form.find("input", {"name": name})
+            return inp["value"].strip() if inp else None
+
+        day = get_input("day")
+        period = get_input("period")
+        subject_id = get_input("subject_id")
+        staff_id = get_input("user_name_id")
+
+        if not day or not period or not subject_id:
+            continue
+
+        bolds = form.find_all("b", class_="text-primary")
+        if len(bolds) < 2:
+            continue
+
+        subject_text = bolds[0].get_text(strip=True)
+        staff_text = bolds[1].get_text(strip=True)
+
+        subject_name, subject_code = extract_name_code(subject_text)
+        staff_name, staff_code = extract_name_code(staff_text)
+
+        timetable.append({
+            "day": day.lower(),
+            "period": int(period),
+            "subject_id": int(subject_id),
+            "subject_name": subject_name,
+            "subject_code": subject_code,
+            "staff_id": int(staff_id) if staff_id else None,
+            "staff_name": staff_name,
+            "staff_code": staff_code,
+        })
+
+    return timetable
+
+def normalize_timetable(entries: List[Dict]) -> List[Dict]:
+    slots: Dict[Tuple[str, int], Dict] = OrderedDict()
+
+    for e in entries:
+        key = (e["day"], e["period"])
+
+        if key not in slots:
+            # first (primary) subject
+            slots[key] = {
+                "day": e["day"],
+                "period": e["period"],
+                "subject_code": e["subject_code"],
+                "staff_code": e["staff_code"],
+            }
+        else:
+            # second subject → alt
+            slot = slots[key]
+
+            # guard: do not overwrite if alt already exists
+            if "alt" in slot:
+                continue  # ignore 3rd+ entries (rare, but safe)
+
+            slot["alt"] = {}
+
+            slot["alt"].update({
+                "subject_code": e["subject_code"],
+                "staff_code": e["staff_code"],
+            })
+
+    return list(slots.values())
+
+
 @app.post("/auth/scrape-login", response_model=UserProfileResponse)
 async def scrape_login(request: LoginRequest):
     """
@@ -365,6 +517,47 @@ async def scrape_login(request: LoginRequest):
         
         return user_profile
     
+@app.post("/faculty/subjects")
+async def scrape_faculty_subjects(request: LoginRequest):
+    """
+    Scrape faculty 'My Subjects' page and return teaching assignments
+    """
+    username = request.username.upper()
+
+    async with httpx.AsyncClient(
+        follow_redirects=True,
+        timeout=120.0,
+        cookies=httpx.Cookies()
+    ) as client:
+
+        # 1️⃣ Login
+        csrf_token = await fetch_csrf_token(client, PORTAL_LOGIN_URL)
+        login_success = await perform_login(client, username, request.password, csrf_token)
+
+        if not login_success:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+
+        # 2️⃣ Fetch subjects page
+        response = await client.get(
+            FACULTY_SUBJECTS_URL,
+            headers={"User-Agent": "Mozilla/5.0"}
+        )
+
+        if response.status_code != 200:
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to load faculty subjects page"
+            )
+
+        # 3️⃣ Parse subjects
+        subjects = parse_faculty_subjects(response.text)
+
+        if not subjects:
+            return {"subjects": []}
+
+        return {"subjects": subjects}
+
+
 @app.post("/auth/debug-scrape")
 async def debug_scrape(request: LoginRequest):
     """Debug endpoint to see scraped data without downloading images"""
@@ -401,6 +594,47 @@ async def debug_scrape(request: LoginRequest):
                 else image_url
             )
         }
+    
+@app.post("/student/timetable")
+async def scrape_student_timetable(request: LoginRequest):
+    """
+    Scrape student timetable
+    """
+    username = request.username.upper()
+
+    async with httpx.AsyncClient(
+        follow_redirects=True,
+        timeout=120.0,
+        cookies=httpx.Cookies()
+    ) as client:
+
+        # 1️⃣ Login
+        csrf_token = await fetch_csrf_token(client, PORTAL_LOGIN_URL)
+        login_success = await perform_login(client, username, request.password, csrf_token)
+
+        if not login_success:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+
+        # 2️⃣ Fetch timetable page
+        response = await client.get(
+            STUDENT_TIMETABLE_URL,
+            headers={"User-Agent": "Mozilla/5.0"}
+        )
+
+        if response.status_code != 200:
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to load timetable page"
+            )
+
+        # 3️⃣ Parse timetable
+        timetable = parse_student_timetable(response.text)
+        n_timetable = normalize_timetable(timetable)
+
+        return {
+            "entries": n_timetable
+        }
+
 
 @app.get("/health")
 async def health():

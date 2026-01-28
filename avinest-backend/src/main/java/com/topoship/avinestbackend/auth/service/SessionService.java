@@ -22,6 +22,10 @@ public class SessionService {
         sessionRepository.createOne(sessionId, userId, deviceId, accessToken, refreshToken);
     }
 
+    public Optional<SessionsRecord> findActiveById(UUID id) {
+        return sessionRepository.findActiveById(id);
+    }
+
     public Optional<SessionsRecord> findActiveByAccessToken(String token) {
         return sessionRepository.findActiveByAccessToken(token);
     }

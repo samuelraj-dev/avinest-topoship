@@ -24,6 +24,13 @@ public class SessionRepository {
         this.dsl = dsl;
     }
 
+    public Optional<SessionsRecord> findActiveById(UUID id) {
+        return dsl.selectFrom(SESSIONS)
+                .where(SESSIONS.SESSION_ID.eq(id))
+                .and(SESSIONS.REVOKED.eq(false))
+                .and(SESSIONS.EXPIRES_AT.gt(LocalDateTime.now()))
+                .fetchOptional();
+    }
 
     public Optional<SessionsRecord> findActiveByAccessToken(String token) {
         String hash = JwtService.sha256(token);

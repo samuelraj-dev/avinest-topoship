@@ -3,6 +3,7 @@ python -m venv .venv
 source .venv/bin/activate
 
 pip install fastapi uvicorn beautifulsoup4 httpx
+pip install lxml
 
 pip freeze > requirements.txt
 

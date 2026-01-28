@@ -16,6 +16,11 @@ import { Route as StudentLayoutRouteImport } from './routes/student/_layout'
 import { Route as FacultyLayoutRouteImport } from './routes/faculty/_layout'
 import { Route as StudentLayoutIndexRouteImport } from './routes/student/_layout.index'
 import { Route as FacultyLayoutIndexRouteImport } from './routes/faculty/_layout.index'
+import { Route as StudentLayoutTimetableRouteImport } from './routes/student/_layout.timetable'
+import { Route as StudentLayoutProfileRouteImport } from './routes/student/_layout.profile'
+import { Route as StudentLayoutMyFacultiesRouteImport } from './routes/student/_layout.my-faculties'
+import { Route as FacultyLayoutProfileRouteImport } from './routes/faculty/_layout.profile'
+import { Route as FacultyLayoutClassesRouteImport } from './routes/faculty/_layout.classes'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,6 +57,32 @@ const FacultyLayoutIndexRoute = FacultyLayoutIndexRouteImport.update({
   path: '/',
   getParentRoute: () => FacultyLayoutRoute,
 } as any)
+const StudentLayoutTimetableRoute = StudentLayoutTimetableRouteImport.update({
+  id: '/timetable',
+  path: '/timetable',
+  getParentRoute: () => StudentLayoutRoute,
+} as any)
+const StudentLayoutProfileRoute = StudentLayoutProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => StudentLayoutRoute,
+} as any)
+const StudentLayoutMyFacultiesRoute =
+  StudentLayoutMyFacultiesRouteImport.update({
+    id: '/my-faculties',
+    path: '/my-faculties',
+    getParentRoute: () => StudentLayoutRoute,
+  } as any)
+const FacultyLayoutProfileRoute = FacultyLayoutProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => FacultyLayoutRoute,
+} as any)
+const FacultyLayoutClassesRoute = FacultyLayoutClassesRouteImport.update({
+  id: '/classes',
+  path: '/classes',
+  getParentRoute: () => FacultyLayoutRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -59,6 +90,11 @@ export interface FileRoutesByFullPath {
   '/student': typeof StudentLayoutRouteWithChildren
   '/login/': typeof LoginIndexRoute
   '/unauthorized/': typeof UnauthorizedIndexRoute
+  '/faculty/classes': typeof FacultyLayoutClassesRoute
+  '/faculty/profile': typeof FacultyLayoutProfileRoute
+  '/student/my-faculties': typeof StudentLayoutMyFacultiesRoute
+  '/student/profile': typeof StudentLayoutProfileRoute
+  '/student/timetable': typeof StudentLayoutTimetableRoute
   '/faculty/': typeof FacultyLayoutIndexRoute
   '/student/': typeof StudentLayoutIndexRoute
 }
@@ -66,6 +102,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginIndexRoute
   '/unauthorized': typeof UnauthorizedIndexRoute
+  '/faculty/classes': typeof FacultyLayoutClassesRoute
+  '/faculty/profile': typeof FacultyLayoutProfileRoute
+  '/student/my-faculties': typeof StudentLayoutMyFacultiesRoute
+  '/student/profile': typeof StudentLayoutProfileRoute
+  '/student/timetable': typeof StudentLayoutTimetableRoute
   '/faculty': typeof FacultyLayoutIndexRoute
   '/student': typeof StudentLayoutIndexRoute
 }
@@ -76,6 +117,11 @@ export interface FileRoutesById {
   '/student/_layout': typeof StudentLayoutRouteWithChildren
   '/login/': typeof LoginIndexRoute
   '/unauthorized/': typeof UnauthorizedIndexRoute
+  '/faculty/_layout/classes': typeof FacultyLayoutClassesRoute
+  '/faculty/_layout/profile': typeof FacultyLayoutProfileRoute
+  '/student/_layout/my-faculties': typeof StudentLayoutMyFacultiesRoute
+  '/student/_layout/profile': typeof StudentLayoutProfileRoute
+  '/student/_layout/timetable': typeof StudentLayoutTimetableRoute
   '/faculty/_layout/': typeof FacultyLayoutIndexRoute
   '/student/_layout/': typeof StudentLayoutIndexRoute
 }
@@ -87,10 +133,25 @@ export interface FileRouteTypes {
     | '/student'
     | '/login/'
     | '/unauthorized/'
+    | '/faculty/classes'
+    | '/faculty/profile'
+    | '/student/my-faculties'
+    | '/student/profile'
+    | '/student/timetable'
     | '/faculty/'
     | '/student/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/unauthorized' | '/faculty' | '/student'
+  to:
+    | '/'
+    | '/login'
+    | '/unauthorized'
+    | '/faculty/classes'
+    | '/faculty/profile'
+    | '/student/my-faculties'
+    | '/student/profile'
+    | '/student/timetable'
+    | '/faculty'
+    | '/student'
   id:
     | '__root__'
     | '/'
@@ -98,6 +159,11 @@ export interface FileRouteTypes {
     | '/student/_layout'
     | '/login/'
     | '/unauthorized/'
+    | '/faculty/_layout/classes'
+    | '/faculty/_layout/profile'
+    | '/student/_layout/my-faculties'
+    | '/student/_layout/profile'
+    | '/student/_layout/timetable'
     | '/faculty/_layout/'
     | '/student/_layout/'
   fileRoutesById: FileRoutesById
@@ -161,14 +227,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FacultyLayoutIndexRouteImport
       parentRoute: typeof FacultyLayoutRoute
     }
+    '/student/_layout/timetable': {
+      id: '/student/_layout/timetable'
+      path: '/timetable'
+      fullPath: '/student/timetable'
+      preLoaderRoute: typeof StudentLayoutTimetableRouteImport
+      parentRoute: typeof StudentLayoutRoute
+    }
+    '/student/_layout/profile': {
+      id: '/student/_layout/profile'
+      path: '/profile'
+      fullPath: '/student/profile'
+      preLoaderRoute: typeof StudentLayoutProfileRouteImport
+      parentRoute: typeof StudentLayoutRoute
+    }
+    '/student/_layout/my-faculties': {
+      id: '/student/_layout/my-faculties'
+      path: '/my-faculties'
+      fullPath: '/student/my-faculties'
+      preLoaderRoute: typeof StudentLayoutMyFacultiesRouteImport
+      parentRoute: typeof StudentLayoutRoute
+    }
+    '/faculty/_layout/profile': {
+      id: '/faculty/_layout/profile'
+      path: '/profile'
+      fullPath: '/faculty/profile'
+      preLoaderRoute: typeof FacultyLayoutProfileRouteImport
+      parentRoute: typeof FacultyLayoutRoute
+    }
+    '/faculty/_layout/classes': {
+      id: '/faculty/_layout/classes'
+      path: '/classes'
+      fullPath: '/faculty/classes'
+      preLoaderRoute: typeof FacultyLayoutClassesRouteImport
+      parentRoute: typeof FacultyLayoutRoute
+    }
   }
 }
 
 interface FacultyLayoutRouteChildren {
+  FacultyLayoutClassesRoute: typeof FacultyLayoutClassesRoute
+  FacultyLayoutProfileRoute: typeof FacultyLayoutProfileRoute
   FacultyLayoutIndexRoute: typeof FacultyLayoutIndexRoute
 }
 
 const FacultyLayoutRouteChildren: FacultyLayoutRouteChildren = {
+  FacultyLayoutClassesRoute: FacultyLayoutClassesRoute,
+  FacultyLayoutProfileRoute: FacultyLayoutProfileRoute,
   FacultyLayoutIndexRoute: FacultyLayoutIndexRoute,
 }
 
@@ -177,10 +282,16 @@ const FacultyLayoutRouteWithChildren = FacultyLayoutRoute._addFileChildren(
 )
 
 interface StudentLayoutRouteChildren {
+  StudentLayoutMyFacultiesRoute: typeof StudentLayoutMyFacultiesRoute
+  StudentLayoutProfileRoute: typeof StudentLayoutProfileRoute
+  StudentLayoutTimetableRoute: typeof StudentLayoutTimetableRoute
   StudentLayoutIndexRoute: typeof StudentLayoutIndexRoute
 }
 
 const StudentLayoutRouteChildren: StudentLayoutRouteChildren = {
+  StudentLayoutMyFacultiesRoute: StudentLayoutMyFacultiesRoute,
+  StudentLayoutProfileRoute: StudentLayoutProfileRoute,
+  StudentLayoutTimetableRoute: StudentLayoutTimetableRoute,
   StudentLayoutIndexRoute: StudentLayoutIndexRoute,
 }
 

@@ -26,6 +26,10 @@ public class AuthFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true; // 🔑 allow CORS preflight
+        }
+
         String path = request.getRequestURI();
 
 //        return path.startsWith("/api/auth/");
@@ -50,7 +54,7 @@ public class AuthFilter extends OncePerRequestFilter {
         try {
             Claims claims = jwtService.parse(token);
             UUID sessionId = UUID.fromString(claims.get("sid", String.class));
-            var session = sessionService.findActiveByAccessToken(token)
+            var session = sessionService.findActiveById(sessionId)
                     .orElseThrow(() -> new RuntimeException("Invalid Session"));
 
             sessionService.touch(sessionId);

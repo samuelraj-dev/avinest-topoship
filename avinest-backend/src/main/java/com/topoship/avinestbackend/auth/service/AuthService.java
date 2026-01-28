@@ -2,6 +2,7 @@ package com.topoship.avinestbackend.auth.service;
 
 import com.topoship.avinestbackend.auth.JwtService;
 import com.topoship.avinestbackend.auth.PasswordService;
+import com.topoship.avinestbackend.auth.repository.SessionRepository;
 import com.topoship.avinestbackend.dto.LoginRequest;
 import com.topoship.avinestbackend.dto.LoginResponse;
 import com.topoship.avinestbackend.dto.TokenResponse;
@@ -14,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -26,8 +28,9 @@ public class AuthService {
     private final JwtService jwtService;
     private final SessionService sessionService;
     private final long accessTokenValidity;
+    private final SessionRepository sessionRepository;
 
-    public AuthService(UserRepository userRepository, LoginScraper loginScraper, UserService userService, DeviceService deviceService, JwtService jwtService, SessionService sessionService, @Value("${jwt.access-token-validity:900000}") long accessTokenValidity) {
+    public AuthService(UserRepository userRepository, LoginScraper loginScraper, UserService userService, DeviceService deviceService, JwtService jwtService, SessionService sessionService, @Value("${jwt.access-token-validity:900000}") long accessTokenValidity, SessionRepository sessionRepository) {
         this.userRepository = userRepository;
         this.loginScraper = loginScraper;
         this.userService = userService;
@@ -35,6 +38,7 @@ public class AuthService {
         this.jwtService = jwtService;
         this.sessionService = sessionService;
         this.accessTokenValidity = accessTokenValidity;
+        this.sessionRepository = sessionRepository;
     }
 
     public LoginResponse login(
@@ -104,5 +108,18 @@ public class AuthService {
                 accessTokenValidity / 1000,
                 "Bearer"
         );
+    }
+
+    public void logout(String refreshToken) {
+
+        SessionsRecord session = sessionRepository
+                .findActiveByRefreshToken(refreshToken)
+                .orElse(null);
+
+        if (session == null) {
+            return;
+        }
+
+        sessionRepository.revoke(session.getSessionId(), LocalDateTime.now(), "Logout");
     }
 }

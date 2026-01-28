@@ -168,7 +168,7 @@
                     <generator>
                         <database>
                             <name>org.jooq.meta.postgres.PostgresDatabase</name>
-                            <includes>app_users|faculty|programs|batches|academic_years|semesters|sections|students|subjects|faculty_subject_section|devices|sessions|login_audit</includes>
+                            <includes>app_users|faculty|programs|batches|academic_years|semesters|sections|students|subjects|faculty_subject_section|devices|sessions|login_audit|course|course_offering|timetable</includes>
                             <excludes>flyway_schema_history</excludes>
                             <inputSchema>public</inputSchema>
                         </database>

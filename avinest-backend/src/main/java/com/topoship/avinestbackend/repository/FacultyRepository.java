@@ -6,6 +6,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Repository
 public class FacultyRepository {
@@ -38,5 +39,11 @@ public class FacultyRepository {
                 .set(FACULTY.GENDER, gender)
                 .returning()
                 .fetchOne();
+    }
+
+    public Optional<FacultyRecord> findByUserId(Long userId) {
+        return dsl.selectFrom(FACULTY)
+                .where(FACULTY.USER_ID.eq(userId))
+                .fetchOptional();
     }
 }
