@@ -39,6 +39,11 @@ LOGIN_FAILURE_MSG = "These credentials do not match our records."
 
 FACULTY_SUBJECTS_URL = "https://ims.ritchennai.edu.in/admin/staff-subjects/index"
 STUDENT_TIMETABLE_URL = "https://ims.ritchennai.edu.in/admin/student-time-table/2938"
+STUDENT_CAT_URL = "https://ims.ritchennai.edu.in/admin/student-cat-mark/report"
+STUDENT_ASSIGNMENT_URL = "https://ims.ritchennai.edu.in/admin/assignment/student/mark/report"
+STUDENT_LAB_URL = "https://ims.ritchennai.edu.in/admin/student_lab_mark/report"
+STUDENT_GRADES_URL = "https://ims.ritchennai.edu.in/admin/grade/student/mark/get_marks"
+
 
 class LoginRequest(BaseModel):
     username: str
@@ -482,6 +487,87 @@ def normalize_timetable(entries: List[Dict]) -> List[Dict]:
 
     return list(slots.values())
 
+def parse_student_marks(html: str) -> List[Dict]:
+    soup = BeautifulSoup(html, "lxml")
+
+    table = soup.select_one("table")
+    if not table:
+        return {"cat": {}}
+
+    result = {"cat": {}}
+
+    # 🔍 Find header row (CO labels)
+    header_row = table.select("thead tr")[-1]
+    headers = header_row.find_all("th")
+
+    # Map index → co key
+    co_indexes = {}
+    for i, th in enumerate(headers):
+        text = th.get_text(strip=True).lower()
+
+        if "co-1" in text:
+            co_indexes[i] = "co1"
+        elif "co-2" in text:
+            co_indexes[i] = "co2"
+        elif "co-3" in text:
+            co_indexes[i] = "co3"
+        elif "co-4" in text:
+            co_indexes[i] = "co4"
+        elif "co-5" in text:
+            co_indexes[i] = "co5"
+
+    rows = table.select("tbody tr")
+
+    def get_text(td):
+        return td.get_text(strip=True) if td else ""
+
+    def to_int(val):
+        return int(val) if val.isdigit() else None
+
+    for row in rows:
+        tds = row.find_all("td")
+
+        if not tds:
+            continue
+
+        subject_code = get_text(tds[0])
+        if not subject_code:
+            continue
+
+        entry = {}
+
+        for idx, co_key in co_indexes.items():
+            if idx < len(tds):
+                val = get_text(tds[idx])
+                num = to_int(val)
+                if num is not None:
+                    entry[co_key] = num
+
+        if entry:
+            result["cat"][subject_code] = entry
+
+    return result
+
+def parse_student_grades(data: list):
+    result = []
+
+    for item in data:
+        subject_code = item.get("subject_code")
+        subject_name = item.get("subject_name")
+        grade = item.get("grade_letter")
+        res = item.get("result")
+
+        if not subject_code or not grade:
+            continue
+
+        result.append({
+            "course_code": subject_code.strip(),
+            "course_name": subject_name.strip(),
+            "grade": grade.strip(),
+            "result": "CLEARED" if res.strip() == "PASS" else "ARREAR"
+        })
+
+    return result
 
 @app.post("/auth/scrape-login", response_model=UserProfileResponse)
 async def scrape_login(request: LoginRequest):
@@ -635,6 +721,116 @@ async def scrape_student_timetable(request: LoginRequest):
             "entries": n_timetable
         }
 
+@app.post("/student/marks")
+async def scrape_student_marks(request: LoginRequest):
+    """
+    Scrape student marks
+    """
+    username = request.username.upper()
+
+    async with httpx.AsyncClient(
+        follow_redirects=True,
+        timeout=120.0,
+        cookies=httpx.Cookies()
+    ) as client:
+
+        # 1️⃣ Login
+        csrf_token = await fetch_csrf_token(client, PORTAL_LOGIN_URL)
+        login_success = await perform_login(client, username, request.password, csrf_token)
+
+        if not login_success:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+
+        # 2️⃣ Fetch marks page
+        response = await client.get(
+            STUDENT_CAT_URL,
+            headers={"User-Agent": "Mozilla/5.0"}
+        )
+
+        if response.status_code != 200:
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to load cat marks page"
+            )
+
+        # 3️⃣ Parse timetable
+        marks = parse_student_marks(response.text)
+
+        return marks
+
+@app.post("/student/grades")
+async def scrape_student_grades(request: LoginRequest):
+    """
+    Scrape student grades
+    """
+    username = request.username.upper()
+
+    async with httpx.AsyncClient(
+        follow_redirects=True,
+        timeout=120.0,
+        cookies=httpx.Cookies()
+    ) as client:
+
+        # 1️⃣ Login
+        csrf_token = await fetch_csrf_token(client, PORTAL_LOGIN_URL)
+        login_success = await perform_login(client, username, request.password, csrf_token)
+
+        if not login_success:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+        csrf_page = await client.get(PORTAL_CSRF_URL)
+
+        soup = BeautifulSoup(csrf_page.text, "lxml")
+        token_input = soup.select_one("input[name=_token]")
+
+        if not token_input:
+            raise HTTPException(status_code=500, detail="CSRF token not found")
+
+        csrf_token = token_input["value"]
+        
+        result = []
+
+        # 2️⃣ Fetch grades
+        for i in range(0, 8):
+            semester = i+1
+            response = await client.post(
+                STUDENT_GRADES_URL,
+                data={
+                    "semester": semester
+                },
+                headers={
+                    "User-Agent": "Mozilla/5.0",
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-Csrf-Token": csrf_token,
+                    "X-Requested-With": "XMLHttpRequest",
+                }
+            )
+
+            if response.status_code != 200:
+                raise HTTPException(
+                    status_code=500,
+                    detail="Failed to load grades page"
+                )
+
+            try:
+                json_data = response.json()
+                rows = json_data.get("data", [])
+            except Exception:
+                raise HTTPException(
+                    status_code=500,
+                    detail="Invalid JSON response"
+                )
+            
+            if not rows:
+                continue
+            
+            grades = parse_student_grades(rows)
+            result.append({
+                "semester": semester,
+                "grades": grades
+            })
+
+        return result
 
 @app.get("/health")
 async def health():

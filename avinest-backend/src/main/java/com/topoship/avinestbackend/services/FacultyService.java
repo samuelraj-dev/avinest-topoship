@@ -50,6 +50,7 @@ public class FacultyService {
                         FACULTY.STAFF_CODE,
                         APP_USERS.FULL_NAME,
                         APP_USERS.EMAIL,
+                        APP_USERS.AVATAR_URL,
                         FACULTY.DEPARTMENT,
                         FACULTY.DESIGNATION,
                         DSL.arrayAggDistinct(COURSE.TITLE).as("courses")
@@ -64,6 +65,7 @@ public class FacultyService {
                         FACULTY.STAFF_CODE,
                         APP_USERS.FULL_NAME,
                         APP_USERS.EMAIL,
+                        APP_USERS.AVATAR_URL,
                         FACULTY.DEPARTMENT,
                         FACULTY.DESIGNATION
                 )
@@ -71,6 +73,7 @@ public class FacultyService {
                         record.get(FACULTY.ID),
                         record.get(FACULTY.STAFF_CODE),
                         record.get(APP_USERS.FULL_NAME),
+                        record.get(APP_USERS.AVATAR_URL),
                         record.get(FACULTY.DEPARTMENT),
                         record.get(FACULTY.DESIGNATION),
                         record.get(APP_USERS.EMAIL),

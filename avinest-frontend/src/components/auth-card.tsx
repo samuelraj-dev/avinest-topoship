@@ -11,8 +11,8 @@ export function AuthCard({
 }) {
   return (
     <Card className="w-full max-w-sm">
-      <CardHeader>
-        <h1 className="text-xl font-semibold  tracking-tight leading-tight">
+      <CardHeader className="flex items-center justify-center">
+        <h1 className="text-xl tracking-tight leading-tight text-[#44475b] font-[535]">
           {title}
         </h1>
         {subtitle && (

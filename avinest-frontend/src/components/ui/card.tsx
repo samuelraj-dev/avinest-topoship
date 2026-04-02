@@ -9,7 +9,7 @@ export function Card({ className, children }: Props) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-border bg-bg",
+        "rounded-md border border-border bg-bg",
         "shadow-sm dark:shadow-none",
         "border border-border/80",
         className
@@ -20,17 +20,17 @@ export function Card({ className, children }: Props) {
   );
 }
 
-export function CardHeader({ children }: { children: React.ReactNode }) {
+export function CardHeader({ className, children }: Props) {
   return (
-    <div className="px-6 pt-6">
+    <div className={cn("px-6 pt-6", className)}>
       {children}
     </div>
   );
 }
 
-export function CardContent({ children }: { children: React.ReactNode }) {
+export function CardContent({ className, children }: Props) {
   return (
-    <div className="px-6 pb-6 pt-4">
+    <div className={cn("px-6 pb-6 pt-4", className)}>
       {children}
     </div>
   );

@@ -10,9 +10,11 @@ export const studentSidebarConfig: SidebarConfig = {
   items: [
     { label: "Dashboard", to: "/student", exact: true },
     { label: "Profile", to: "/student/profile" },
-    { label: "Courses", to: "/student/courses" },
+    { label: "Courses", to: "/student/enrolled-courses" },
     { label: "Timetable", to: "/student/timetable" },
     { label: "My Faculties", to: "/student/my-faculties" },
+    { label: "Marks", to: "/student/marks" },
+    { label: "Grade Book", to: "/student/grades" },
   ],
 };
 

@@ -11,6 +11,7 @@ export function PasswordInput({ ...props }: Props) {
       <Input
         {...props}
         type={visible ? "text" : "password"}
+        placeholder="Enter your password"
         className="pr-10"
       />
 

@@ -4,6 +4,7 @@ import { Card } from "../components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "../components/ui/button";
 import { SyncButton } from "../components/modal/confirm-sync";
+import { Skeleton } from "../components/ui/skeleton";
 
 export type FacultySubjectItem = {
   course_id: number
@@ -32,12 +33,14 @@ export function ClassesPage() {
   });
 
   if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <div className="h-24 animate-pulse rounded-lg bg-muted" />
-        <div className="h-24 animate-pulse rounded-lg bg-muted" />
-      </div>
-    );
+    // return (
+    //   <div className="space-y-4">
+    //     <div className="h-24 animate-pulse rounded-lg bg-muted" />
+    //     <div className="h-24 animate-pulse rounded-lg bg-muted" />
+    //   </div>
+    // );
+
+    return <Skeleton />
   }
 
   return (

@@ -14,11 +14,15 @@ import { Route as UnauthorizedIndexRouteImport } from './routes/unauthorized/ind
 import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as StudentLayoutRouteImport } from './routes/student/_layout'
 import { Route as FacultyLayoutRouteImport } from './routes/faculty/_layout'
+import { Route as TestLoginIndexRouteImport } from './routes/test/login/index'
 import { Route as StudentLayoutIndexRouteImport } from './routes/student/_layout.index'
 import { Route as FacultyLayoutIndexRouteImport } from './routes/faculty/_layout.index'
 import { Route as StudentLayoutTimetableRouteImport } from './routes/student/_layout.timetable'
 import { Route as StudentLayoutProfileRouteImport } from './routes/student/_layout.profile'
 import { Route as StudentLayoutMyFacultiesRouteImport } from './routes/student/_layout.my-faculties'
+import { Route as StudentLayoutMarksRouteImport } from './routes/student/_layout.marks'
+import { Route as StudentLayoutGradesRouteImport } from './routes/student/_layout.grades'
+import { Route as StudentLayoutEnrolledCoursesRouteImport } from './routes/student/_layout.enrolled-courses'
 import { Route as FacultyLayoutProfileRouteImport } from './routes/faculty/_layout.profile'
 import { Route as FacultyLayoutClassesRouteImport } from './routes/faculty/_layout.classes'
 
@@ -47,6 +51,11 @@ const FacultyLayoutRoute = FacultyLayoutRouteImport.update({
   path: '/faculty',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TestLoginIndexRoute = TestLoginIndexRouteImport.update({
+  id: '/test/login/',
+  path: '/test/login/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StudentLayoutIndexRoute = StudentLayoutIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -73,6 +82,22 @@ const StudentLayoutMyFacultiesRoute =
     path: '/my-faculties',
     getParentRoute: () => StudentLayoutRoute,
   } as any)
+const StudentLayoutMarksRoute = StudentLayoutMarksRouteImport.update({
+  id: '/marks',
+  path: '/marks',
+  getParentRoute: () => StudentLayoutRoute,
+} as any)
+const StudentLayoutGradesRoute = StudentLayoutGradesRouteImport.update({
+  id: '/grades',
+  path: '/grades',
+  getParentRoute: () => StudentLayoutRoute,
+} as any)
+const StudentLayoutEnrolledCoursesRoute =
+  StudentLayoutEnrolledCoursesRouteImport.update({
+    id: '/enrolled-courses',
+    path: '/enrolled-courses',
+    getParentRoute: () => StudentLayoutRoute,
+  } as any)
 const FacultyLayoutProfileRoute = FacultyLayoutProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -92,11 +117,15 @@ export interface FileRoutesByFullPath {
   '/unauthorized/': typeof UnauthorizedIndexRoute
   '/faculty/classes': typeof FacultyLayoutClassesRoute
   '/faculty/profile': typeof FacultyLayoutProfileRoute
+  '/student/enrolled-courses': typeof StudentLayoutEnrolledCoursesRoute
+  '/student/grades': typeof StudentLayoutGradesRoute
+  '/student/marks': typeof StudentLayoutMarksRoute
   '/student/my-faculties': typeof StudentLayoutMyFacultiesRoute
   '/student/profile': typeof StudentLayoutProfileRoute
   '/student/timetable': typeof StudentLayoutTimetableRoute
   '/faculty/': typeof FacultyLayoutIndexRoute
   '/student/': typeof StudentLayoutIndexRoute
+  '/test/login/': typeof TestLoginIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -104,11 +133,15 @@ export interface FileRoutesByTo {
   '/unauthorized': typeof UnauthorizedIndexRoute
   '/faculty/classes': typeof FacultyLayoutClassesRoute
   '/faculty/profile': typeof FacultyLayoutProfileRoute
+  '/student/enrolled-courses': typeof StudentLayoutEnrolledCoursesRoute
+  '/student/grades': typeof StudentLayoutGradesRoute
+  '/student/marks': typeof StudentLayoutMarksRoute
   '/student/my-faculties': typeof StudentLayoutMyFacultiesRoute
   '/student/profile': typeof StudentLayoutProfileRoute
   '/student/timetable': typeof StudentLayoutTimetableRoute
   '/faculty': typeof FacultyLayoutIndexRoute
   '/student': typeof StudentLayoutIndexRoute
+  '/test/login': typeof TestLoginIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -119,11 +152,15 @@ export interface FileRoutesById {
   '/unauthorized/': typeof UnauthorizedIndexRoute
   '/faculty/_layout/classes': typeof FacultyLayoutClassesRoute
   '/faculty/_layout/profile': typeof FacultyLayoutProfileRoute
+  '/student/_layout/enrolled-courses': typeof StudentLayoutEnrolledCoursesRoute
+  '/student/_layout/grades': typeof StudentLayoutGradesRoute
+  '/student/_layout/marks': typeof StudentLayoutMarksRoute
   '/student/_layout/my-faculties': typeof StudentLayoutMyFacultiesRoute
   '/student/_layout/profile': typeof StudentLayoutProfileRoute
   '/student/_layout/timetable': typeof StudentLayoutTimetableRoute
   '/faculty/_layout/': typeof FacultyLayoutIndexRoute
   '/student/_layout/': typeof StudentLayoutIndexRoute
+  '/test/login/': typeof TestLoginIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -135,11 +172,15 @@ export interface FileRouteTypes {
     | '/unauthorized/'
     | '/faculty/classes'
     | '/faculty/profile'
+    | '/student/enrolled-courses'
+    | '/student/grades'
+    | '/student/marks'
     | '/student/my-faculties'
     | '/student/profile'
     | '/student/timetable'
     | '/faculty/'
     | '/student/'
+    | '/test/login/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -147,11 +188,15 @@ export interface FileRouteTypes {
     | '/unauthorized'
     | '/faculty/classes'
     | '/faculty/profile'
+    | '/student/enrolled-courses'
+    | '/student/grades'
+    | '/student/marks'
     | '/student/my-faculties'
     | '/student/profile'
     | '/student/timetable'
     | '/faculty'
     | '/student'
+    | '/test/login'
   id:
     | '__root__'
     | '/'
@@ -161,11 +206,15 @@ export interface FileRouteTypes {
     | '/unauthorized/'
     | '/faculty/_layout/classes'
     | '/faculty/_layout/profile'
+    | '/student/_layout/enrolled-courses'
+    | '/student/_layout/grades'
+    | '/student/_layout/marks'
     | '/student/_layout/my-faculties'
     | '/student/_layout/profile'
     | '/student/_layout/timetable'
     | '/faculty/_layout/'
     | '/student/_layout/'
+    | '/test/login/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -174,6 +223,7 @@ export interface RootRouteChildren {
   StudentLayoutRoute: typeof StudentLayoutRouteWithChildren
   LoginIndexRoute: typeof LoginIndexRoute
   UnauthorizedIndexRoute: typeof UnauthorizedIndexRoute
+  TestLoginIndexRoute: typeof TestLoginIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -213,6 +263,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FacultyLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/test/login/': {
+      id: '/test/login/'
+      path: '/test/login'
+      fullPath: '/test/login/'
+      preLoaderRoute: typeof TestLoginIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/student/_layout/': {
       id: '/student/_layout/'
       path: '/'
@@ -246,6 +303,27 @@ declare module '@tanstack/react-router' {
       path: '/my-faculties'
       fullPath: '/student/my-faculties'
       preLoaderRoute: typeof StudentLayoutMyFacultiesRouteImport
+      parentRoute: typeof StudentLayoutRoute
+    }
+    '/student/_layout/marks': {
+      id: '/student/_layout/marks'
+      path: '/marks'
+      fullPath: '/student/marks'
+      preLoaderRoute: typeof StudentLayoutMarksRouteImport
+      parentRoute: typeof StudentLayoutRoute
+    }
+    '/student/_layout/grades': {
+      id: '/student/_layout/grades'
+      path: '/grades'
+      fullPath: '/student/grades'
+      preLoaderRoute: typeof StudentLayoutGradesRouteImport
+      parentRoute: typeof StudentLayoutRoute
+    }
+    '/student/_layout/enrolled-courses': {
+      id: '/student/_layout/enrolled-courses'
+      path: '/enrolled-courses'
+      fullPath: '/student/enrolled-courses'
+      preLoaderRoute: typeof StudentLayoutEnrolledCoursesRouteImport
       parentRoute: typeof StudentLayoutRoute
     }
     '/faculty/_layout/profile': {
@@ -282,6 +360,9 @@ const FacultyLayoutRouteWithChildren = FacultyLayoutRoute._addFileChildren(
 )
 
 interface StudentLayoutRouteChildren {
+  StudentLayoutEnrolledCoursesRoute: typeof StudentLayoutEnrolledCoursesRoute
+  StudentLayoutGradesRoute: typeof StudentLayoutGradesRoute
+  StudentLayoutMarksRoute: typeof StudentLayoutMarksRoute
   StudentLayoutMyFacultiesRoute: typeof StudentLayoutMyFacultiesRoute
   StudentLayoutProfileRoute: typeof StudentLayoutProfileRoute
   StudentLayoutTimetableRoute: typeof StudentLayoutTimetableRoute
@@ -289,6 +370,9 @@ interface StudentLayoutRouteChildren {
 }
 
 const StudentLayoutRouteChildren: StudentLayoutRouteChildren = {
+  StudentLayoutEnrolledCoursesRoute: StudentLayoutEnrolledCoursesRoute,
+  StudentLayoutGradesRoute: StudentLayoutGradesRoute,
+  StudentLayoutMarksRoute: StudentLayoutMarksRoute,
   StudentLayoutMyFacultiesRoute: StudentLayoutMyFacultiesRoute,
   StudentLayoutProfileRoute: StudentLayoutProfileRoute,
   StudentLayoutTimetableRoute: StudentLayoutTimetableRoute,
@@ -305,6 +389,7 @@ const rootRouteChildren: RootRouteChildren = {
   StudentLayoutRoute: StudentLayoutRouteWithChildren,
   LoginIndexRoute: LoginIndexRoute,
   UnauthorizedIndexRoute: UnauthorizedIndexRoute,
+  TestLoginIndexRoute: TestLoginIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

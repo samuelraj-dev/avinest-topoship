@@ -10,6 +10,8 @@ public record FacultyWithCoursesDto(
     String staffCode,
     @JsonProperty("full_name")
     String fullName,
+    @JsonProperty("avatar_url")
+    String avatarUrl,
     String department,
     String designation,
     String email,

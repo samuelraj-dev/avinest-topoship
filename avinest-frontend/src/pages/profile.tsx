@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../api/client";
 import { PYTHON_MEDIA_BASE_URL } from "../lib/utils/constants";
+import { Skeleton } from "../components/ui/skeleton";
+import { PageHeader } from "../components/page-header";
 
 type Role = "STUDENT" | "FACULTY";
 
@@ -85,24 +87,6 @@ export function ProfilePage() {
     </div>
   );
 
-}
-
-
-function PageHeader({
-  title,
-  subtitle,
-}: {
-  title: string;
-  subtitle?: string;
-}) {
-  return (
-    <div>
-      <h1 className="text-2xl font-semibold">{title}</h1>
-      {subtitle && (
-        <p className="text-sm text-fg/60">{subtitle}</p>
-      )}
-    </div>
-  );
 }
 
 
@@ -262,20 +246,6 @@ function Info({
       <span className="text-sm font-medium text-fg">
         {value || "—"}
       </span>
-    </div>
-  );
-}
-
-
-
-function Skeleton() {
-  return (
-    <div className="rounded-lg border border-border bg-bg p-6">
-      <div className="h-6 w-40 animate-pulse rounded bg-muted" />
-      <div className="mt-4 space-y-2">
-        <div className="h-4 w-full animate-pulse rounded bg-muted" />
-        <div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
-      </div>
     </div>
   );
 }

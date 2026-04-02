@@ -2,6 +2,8 @@ package com.topoship.avinestbackend;
 
 import com.topoship.avinestbackend.auth.AuthenticatedUser;
 import com.topoship.avinestbackend.dto.*;
+import com.topoship.avinestbackend.dto.marks.StudentGradebookResponse;
+import com.topoship.avinestbackend.dto.marks.StudentMarksResponse;
 import com.topoship.avinestbackend.dto.timetable.SectionTimetableResponse;
 import com.topoship.avinestbackend.services.FacultyService;
 import com.topoship.avinestbackend.services.StudentService;
@@ -55,6 +57,16 @@ public class MeController {
         return facultyService.getFacultiesForSection(student.getCurrentSectionId());
     }
 
+    @GetMapping(path = {"student/enrolled-courses"})
+    public List<EnrolledCoursesDto> myCourses(HttpServletRequest req) {
+        AuthenticatedUser user = (AuthenticatedUser) req.getAttribute("auth");
+
+        StudentsRecord student = studentService.findOneById(user.userId())
+                .orElseThrow();
+
+        return studentService.getEnrolledCourses(student.getCurrentSectionId());
+    }
+
     @PostMapping(path = {"faculty/sync/faculty-subjects"})
     public void syncFacultySubjects(
             @RequestBody FacultySyncRequest request,
@@ -90,6 +102,52 @@ public class MeController {
         AuthenticatedUser auth =
                 (AuthenticatedUser) http.getAttribute("auth");
         return studentService.getTimetable(auth.userId());
+    }
+
+    @PostMapping(path = {"student/sync/marks"})
+    public void syncMarks(
+            @RequestBody StudentTimetableSyncRequest request,
+            HttpServletRequest http
+    ) {
+        AuthenticatedUser auth =
+                (AuthenticatedUser) http.getAttribute("auth");
+
+        studentService.syncMarks(
+                auth.userId(),
+                request.password()
+        );
+    }
+
+    @GetMapping(path = {"student/marks"})
+    public StudentMarksResponse getMarks(
+            HttpServletRequest http
+    ) {
+        AuthenticatedUser auth =
+                (AuthenticatedUser) http.getAttribute("auth");
+        return studentService.getMarks(auth.userId());
+    }
+
+    @PostMapping(path = {"student/sync/grades"})
+    public void syncGrades(
+            @RequestBody StudentTimetableSyncRequest request,
+            HttpServletRequest http
+    ) {
+        AuthenticatedUser auth =
+                (AuthenticatedUser) http.getAttribute("auth");
+
+        studentService.syncGrades(
+                auth.userId(),
+                request.password()
+        );
+    }
+
+    @GetMapping(path = {"student/grades"})
+    public StudentGradebookResponse getGrades(
+            HttpServletRequest http
+    ) {
+        AuthenticatedUser auth =
+                (AuthenticatedUser) http.getAttribute("auth");
+        return studentService.getGrades(auth.userId());
     }
 
     @GetMapping(path = {"faculty/subjects"})

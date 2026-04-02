@@ -8,8 +8,8 @@ export function Field({
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-1.5">
-      <label className="text-sm font-medium text-fg">{label}</label>
+    <div className="">
+      <label style={{ lineHeight: "2.5" }} className="text-sm text-fg text-gray-600 font-normal">{label}</label>
       {children}
       {error && <p className="text-sm text-danger">{error}</p>}
     </div>

@@ -13,7 +13,7 @@ export function LoginPage() {
     //   <button className="btn w-full">Login</button>
     // </form>
     <>
-      <ThemeToggle />
+      {/* <ThemeToggle /> */}
       {/* <div className="mx-auto w-full max-w-sm rounded-lg border border-border bg-bg p-6 shadow-sm">
         <h1 className="mb-1 text-xl font-semibold">Welcome back</h1>
         <p className="mb-6 text-sm text-fg/60">
@@ -23,13 +23,16 @@ export function LoginPage() {
         <LoginForm />
       </div> */}
       <AuthLayout>
-  <AuthCard
-    title="Welcome back"
-    subtitle="Sign in to continue"
-  >
-    <LoginForm />
-  </AuthCard>
-</AuthLayout>
+        <div className="flex items-center justify-center text-white font-semibold text-xl mb-12">
+          <img src="/logo.png" className="h-[35px] rounded-full" />
+          <span className="ml-2">AviNest</span>
+        </div>
+        <AuthCard
+          title="Welcome to AviNest"
+        >
+          <LoginForm />
+        </AuthCard>
+    </AuthLayout>
 
     </>
   );

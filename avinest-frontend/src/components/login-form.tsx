@@ -43,10 +43,11 @@ export function LoginForm() {
           setFormError("Invalid username or password");
         }
       })}
-      className="space-y-4"
+      className="space-y-2"
     >
       <Field label="Username" error={errors.username?.message}>
         <Input
+        className="text-gray-900"
           {...register("username", { required: "Username is required" })}
           placeholder="Enter your username"
         />
@@ -60,7 +61,9 @@ export function LoginForm() {
         />
       </Field>
 
-      <Button loading={isSubmitting}>
+      <Button
+        className="w-full mt-2 text-sm font-semibold bg-[#04b488] hover:bg-[#04ad83]"
+        loading={isSubmitting}>
         Login
       </Button>
       <FormError message={formError} />
