@@ -45,6 +45,7 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
+          cache-dependency-path: avinest-frontend/pnpm-lock.yaml
 
       - name: Install dependencies
         working-directory: avinest-frontend
@@ -52,7 +53,7 @@ jobs:
 
       - name: Build project
         working-directory: avinest-frontend
-        run: pnpm build
+        run: pnpx vite build
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
