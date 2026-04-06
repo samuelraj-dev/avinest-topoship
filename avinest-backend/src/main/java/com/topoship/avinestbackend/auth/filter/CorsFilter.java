@@ -22,16 +22,21 @@ public class CorsFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+
         String origin = request.getHeader("Origin");
 
-        if (origin != null && Arrays.asList(allowedOrigins.split(",")).contains(origin)) {
+        boolean allowed = origin != null && Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .anyMatch(o -> o.equals(origin));
+
+        if (allowed) {
             response.setHeader("Access-Control-Allow-Origin", origin);
-            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-            response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+            response.setHeader("Access-Control-Allow-Methods", "*");
+            response.setHeader("Access-Control-Allow-Headers", "*");
             response.setHeader("Access-Control-Allow-Credentials", "true");
         }
 
-        // IMPORTANT: short-circuit preflight
+        // Preflight
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
             return;
