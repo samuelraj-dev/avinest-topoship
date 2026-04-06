@@ -43,9 +43,10 @@
 
 import axios from "axios";
 import { getAccessToken, setAccessToken, logout } from "../auth/authStore";
+import { BASE_URL } from "../lib/utils/constants";
 
 const api = axios.create({
-  baseURL: "http://localhost:8080/api",
+  baseURL: `${BASE_URL}/api`,
   withCredentials: true,
 });
 
@@ -118,7 +119,7 @@ api.interceptors.response.use(
 
       // Use direct axios to avoid interceptor loop
       const res = await axios.post(
-        "http://localhost:8080/api/auth/refresh",
+        `${BASE_URL}/api/auth/refresh`,
         { refresh_token: refreshToken },
         { withCredentials: true }
       );

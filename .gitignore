@@ -12,3 +12,6 @@ francesco-gallarotti-ruQHpukrN7c-unsplash.jpg
 *.lock
 *.info
 *.backup
+*.env
+*.env.*
+.env*

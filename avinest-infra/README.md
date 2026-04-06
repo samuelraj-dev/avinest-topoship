@@ -31,3 +31,14 @@
 
 - sudo certbot --nginx -d avinest.topoship.com
 - verify autorenew : sudo certbot renew --dry-run
+
+# Upload react dist to s3
+
+- aws --profile avinest s3 sync dist/ s3://avinest.topoship.com --delete
+
+
+# TODO in react deployment cicd
+
+- aws cloudfront create-invalidation \
+  --distribution-id YOUR_ID \
+  --paths "/*"

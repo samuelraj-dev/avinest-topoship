@@ -219,11 +219,13 @@ resource "aws_cloudfront_distribution" "frontend" {
   enabled             = true
   comment             = "avinest-frontend-cdn"
   default_root_object = "index.html"
+  price_class = "PriceClass_All"
+
+  aliases = ["avinest.topoship.com"]
 
   origin {
     domain_name = aws_s3_bucket.frontend.bucket_regional_domain_name
     origin_id   = "s3-origin"
-
     origin_access_control_id = aws_cloudfront_origin_access_control.frontend.id
   }
 
@@ -237,6 +239,18 @@ resource "aws_cloudfront_distribution" "frontend" {
     cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6"
   }
 
+  custom_error_response {
+    error_code         = 403
+    response_code      = 200
+    response_page_path = "/index.html"
+  }
+
+  custom_error_response {
+    error_code         = 404
+    response_code      = 200
+    response_page_path = "/index.html"
+  }
+
   restrictions {
     geo_restriction {
       restriction_type = "none"
@@ -244,8 +258,14 @@ resource "aws_cloudfront_distribution" "frontend" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn      = aws_acm_certificate.frontend.arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
+
+  wait_for_deployment = true
+
+  depends_on = [ aws_acm_certificate.frontend ]
 
   tags = {
     Name = "avinest-frontend-cdn"

@@ -4,11 +4,17 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class CorsFilter extends OncePerRequestFilter {
+
+    @Value("${app.allowed-origins}")
+    private String allowedOrigins;
 
     @Override
     protected void doFilterInternal(
@@ -18,13 +24,12 @@ public class CorsFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String origin = request.getHeader("Origin");
 
-        if ("http://localhost:5173".equals(origin) ||
-            "http://localhost:4173".equals(origin)) {
+        if (origin != null && Arrays.asList(allowedOrigins.split(",")).contains(origin)) {
             response.setHeader("Access-Control-Allow-Origin", origin);
+            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+            response.setHeader("Access-Control-Allow-Credentials", "true");
         }
-        response.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "Authorization,Content-Type");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
 
         // IMPORTANT: short-circuit preflight
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {

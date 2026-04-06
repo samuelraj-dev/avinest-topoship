@@ -1,6 +1,7 @@
 import { Outlet, createRootRoute } from '@tanstack/react-router';
 import { getClaims, setAccessToken } from '../auth/authStore';
 import axios from 'axios';
+import { BASE_URL } from '../lib/utils/constants';
 
 export const Route = createRootRoute({
   beforeLoad: async () => {
@@ -12,7 +13,7 @@ export const Route = createRootRoute({
     try {
       // const res = await api.post("/auth/refresh", { refresh_token: refreshToken })
       const res = await axios.post(
-        "http://localhost:8080/api/auth/refresh",
+        `${BASE_URL}/api/auth/refresh`,
         { refresh_token: refreshToken },
         { withCredentials: true }
       );
