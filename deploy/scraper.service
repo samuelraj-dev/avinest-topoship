@@ -8,6 +8,9 @@ WorkingDirectory=/home/ubuntu/avinest-topoship/avinest-scraper
 
 ExecStart=/home/ubuntu/avinest-topoship/avinest-scraper/.venv/bin/python main.py
 
+Nice=10
+CPUQuota=50%
+
 Restart=always
 RestartSec=5
 
