@@ -12,6 +12,7 @@ git pull -f origin main
 
 echo "Copy systemd service..."
 sudo cp deploy/springboot.service /etc/systemd/system/
+sudo cp deploy/scraper.service /etc/systemd/system/
 
 echo "Reload systemd..."
 sudo systemctl daemon-reload
@@ -43,9 +44,6 @@ fi
 echo "Installing dependencies..."
 .venv/bin/pip install --upgrade pip
 .venv/bin/pip install -r requirements.txt
-
-echo "Copy systemd service..."
-sudo cp deploy/scraper.service /etc/systemd/system/
 
 echo "Reload systemd..."
 sudo systemctl daemon-reload
