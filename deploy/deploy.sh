@@ -27,3 +27,23 @@ cd $BASE_DIR/avinest-backend
 
 echo "Restart service..."
 sudo systemctl restart springboot
+
+echo "Building scrapper..."
+cd $BASE_DIR/avinest-scrapper
+rm -rf .venv
+python3.13 -m venv .venv
+source .venv/bin/activate
+
+echo "Installing dependencies..."
+pip install --upgrade pip
+pip install -r requirements.txt
+
+echo "Copy systemd service..."
+sudo cp deploy/scrapper.service /etc/systemd/system/
+
+echo "Reload systemd..."
+sudo systemctl enable scrapper
+sudo systemctl daemon-reload
+
+echo "Restart service..."
+sudo systemctl restart scrapper

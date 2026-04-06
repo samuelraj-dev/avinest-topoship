@@ -26,6 +26,7 @@ jobs:
             chmod +x deploy/deploy.sh
             ./deploy/deploy.sh
           EOF
+          EOF
 
   frontend:
     runs-on: ubuntu-latest
