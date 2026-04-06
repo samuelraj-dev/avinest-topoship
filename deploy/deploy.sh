@@ -6,7 +6,7 @@ BASE_DIR=/home/ubuntu/avinest-topoship
 
 echo "Pull latest code..."
 cd $BASE_DIR
-git pull origin main
+git pull -f origin main
 
 echo "Copy systemd service..."
 sudo cp deploy/springboot.service /etc/systemd/system/
