@@ -11,9 +11,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class FilterConfig {
     @Bean
-    public FilterRegistrationBean<CorsFilter> corsFilter() {
+    public FilterRegistrationBean<CorsFilter> corsFilterReg(CorsFilter corsFilter) {
         FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>();
-        bean.setFilter(new CorsFilter());
+        bean.setFilter(corsFilter);
         bean.setOrder(0);
         bean.addUrlPatterns("/*");
         return bean;
