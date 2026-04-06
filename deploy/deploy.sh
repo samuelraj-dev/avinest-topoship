@@ -12,6 +12,7 @@ echo "Copy systemd service..."
 sudo cp deploy/springboot.service /etc/systemd/system/
 
 echo "Reload systemd..."
+sudo systemctl enable springboot
 sudo systemctl daemon-reload
 
 echo "Build spring boot..."
