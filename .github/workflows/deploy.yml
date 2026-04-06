@@ -54,7 +54,9 @@ jobs:
       - name: Build project
         working-directory: avinest-frontend
         run: pnpx vite build
-
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_SCRAPPER_URL: ${{ secrets.VITE_SCRAPPER_URL }}
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
