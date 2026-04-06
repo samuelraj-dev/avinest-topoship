@@ -31,8 +31,8 @@ public class CorsFilter extends OncePerRequestFilter {
 
         // if (origin == null || allowed) {
             response.setHeader("Access-Control-Allow-Origin", "https://avinest.topoship.com");
-            response.setHeader("Access-Control-Allow-Methods", "*");
-            response.setHeader("Access-Control-Allow-Headers", "*");
+            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept, Origin");
             response.setHeader("Access-Control-Allow-Credentials", "true");
         // }
 
