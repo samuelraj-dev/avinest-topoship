@@ -24,6 +24,8 @@ public class CorsFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         String origin = request.getHeader("Origin");
+        
+        System.out.println(allowedOrigins);
 
         boolean allowed = origin != null && Arrays.stream(allowedOrigins.split(","))
                 .map(String::trim)
