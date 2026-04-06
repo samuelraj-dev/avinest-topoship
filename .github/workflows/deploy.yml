@@ -20,5 +20,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/key.pem \
           ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            /home/ubuntu/avinest-topoship/deploy/deploy.sh
+            cd ~/avinest-topoship
+            chmod +x ./deploy/deploy.sh
+            ./deploy/deploy.sh
           EOF
