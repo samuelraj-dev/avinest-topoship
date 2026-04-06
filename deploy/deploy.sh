@@ -15,6 +15,12 @@ echo "Reload systemd..."
 sudo systemctl enable springboot
 sudo systemctl daemon-reload
 
+echo "Update nginx config..."
+sudo cp deploy/nginx.conf /etc/nginx/sites-available/default
+
+echo "Restart nginx..."
+sudo systemctl restart nginx
+
 echo "Build spring boot..."
 cd $BASE_DIR/avinest-backend
 ./mvnw clean package -Dflyway.skip=true -Djooq.codegen.skip=true -DskipTests

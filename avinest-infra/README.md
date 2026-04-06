@@ -26,3 +26,8 @@
 - git clone https://github.com/samuelraj-dev/avinest-topoship.git
 - cd ~/avinest-topoship/avinest-backend
 - ./mvnw clean package -Dflyway.skip=true -Djooq.codegen.skip=true -DskipTests
+
+# SSL
+
+- sudo certbot --nginx -d avinest.topoship.com
+- verify autorenew : sudo certbot renew --dry-run

@@ -7,6 +7,14 @@ apt update -y
 
 apt install openjdk-25-jdk -y
 
-apt install maven -y
-
 apt install git -y
+
+apt install nginx -y
+
+systemctl enable nginx
+systemctl start nginx
+
+mkdir -p /var/www/avinest
+
+apt install certbot -y
+apt install python3-certbot-nginx -y
