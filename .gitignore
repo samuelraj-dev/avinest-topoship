@@ -4,3 +4,10 @@ dr-sourabh-panari-878cggGk4FE-unsplash.jpg
 sebastian-svenson-LpbyDENbQQg-unsplash.jpg
 francesco-gallarotti-ruQHpukrN7c-unsplash.jpg
 ./avinest-design-system/*
+.env
+*.pem
+*/.terraform/*
+.terraform.lock.hcl
+*.tfstate
+*.lock
+*.info

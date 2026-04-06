@@ -1,0 +1,17 @@
+[Unit]
+Description=Spring Boot App
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/avinest-topoship/avinest-backend
+
+EnvironmentFile=/etc/avinest.env
+
+ExecStart=/usr/bin/java -jar target/*.jar
+
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

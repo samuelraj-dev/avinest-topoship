@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -e
+
+BASE_DIR=/home/ubuntu/avinest-topoship
+
+echo "Pull latest code..."
+cd $BASE_DIR
+git pull origin main
+
+echo "Copy systemd service..."
+sudo cp deploy/springboot.service /etc/systemd/system/
+
+echo "Reload systemd..."
+sudo systemctl daemon-reload
+
+echo "Build spring boot..."
+cd $BASE_DIR/avinest-backend
+./mvnw clean package -Dflyway.skip=true -Djooq.codegen.skip=true -DskipTests
+
+echo "Restart service..."
+sudo systemctl restart springboot
+
+

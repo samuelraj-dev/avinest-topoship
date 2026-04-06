@@ -16,8 +16,12 @@ public class CorsFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+        String origin = request.getHeader("Origin");
 
-        response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+        if ("http://localhost:5173".equals(origin) ||
+            "http://localhost:4173".equals(origin)) {
+            response.setHeader("Access-Control-Allow-Origin", origin);
+        }
         response.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
         response.setHeader("Access-Control-Allow-Headers", "Authorization,Content-Type");
         response.setHeader("Access-Control-Allow-Credentials", "true");

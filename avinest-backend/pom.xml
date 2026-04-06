@@ -174,7 +174,7 @@
                         </database>
                         <target>
                             <packageName>com.topoship.jooq.generated</packageName>
-                            <directory>${project.build.directory}/generated-sources/jooq</directory>
+                            <directory>src/main/java</directory>
                         </target>
                     </generator>
                 </configuration>
