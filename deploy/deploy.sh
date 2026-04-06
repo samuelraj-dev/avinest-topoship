@@ -21,5 +21,3 @@ cd $BASE_DIR/avinest-backend
 
 echo "Restart service..."
 sudo systemctl restart springboot
-
-
