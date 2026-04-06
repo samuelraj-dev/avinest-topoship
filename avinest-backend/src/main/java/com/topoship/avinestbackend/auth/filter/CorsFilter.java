@@ -26,8 +26,6 @@ public class CorsFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         String origin = request.getHeader("Origin");
-        
-        System.out.println(allowedOrigins);
 
         boolean allowed = origin != null && Arrays.stream(allowedOrigins.split(","))
                 .map(String::trim)
@@ -40,7 +38,11 @@ public class CorsFilter extends OncePerRequestFilter {
             response.setHeader("Access-Control-Allow-Credentials", "true");
         }
 
-        // Preflight
+        System.out.println("Origin: [" + origin + "]");
+        System.out.println("AllowedOrigins: [" + allowedOrigins + "]");
+
+        System.out.println("Allowed: " + allowed);
+
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
             return;
