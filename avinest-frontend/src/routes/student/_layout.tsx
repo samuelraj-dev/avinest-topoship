@@ -15,6 +15,10 @@ export const studentSidebarConfig: SidebarConfig = {
     { label: "My Faculties", to: "/student/my-faculties" },
     { label: "Marks", to: "/student/marks" },
     { label: "Grade Book", to: "/student/grades" },
+    { label: "Project Tracking", to: "/student/grades" },
+    { label: "Skill Roadmap", to: "/student/grades" },
+    { label: "Placement Prep.", to: "/student/grades" },
+    { label: "Higher Studies", to: "/student/grades" },
   ],
 };
 
